@@ -2,8 +2,10 @@ import discord
 import asyncio
 from discord.ext import commands, tasks
 from itertools import cycle
+import os
 
-bot = commands.Bot(command_prefix='!')
+description = '''Bot by rexjohannes98#3966'''
+bot = commands.Bot(command_prefix=commands.when_mentioned_or"!", description=description)
 status = cycle(["My", "Cool", "Presence.", "Here", "you", "can", "add", "more!"])
 
 @bot.event
@@ -36,8 +38,25 @@ async def on_command_error(ctx, error):
 bot.remove_command('help')
 
 @bot.command()
-async def help(ctx):
-  await ctx.send("Commands: \nhelp - View this message.")
+async def load(ctx, extension):
+    bot.load_extension(f"cogs.{extension}")
+    await ctx.send(f"Loding {extension}...")
+
+@bot.command()
+async def unload(ctx, extension):
+    bot.unload_extension(f"cogs.{extension}")
+    await ctx.send(f"Unloading {extension}...")
+
+@bot.command()
+async def reload(ctx, extension):
+    bot.unload_extension(f"cogs.{extension}")
+    bot.load_extension(f"cogs.{extension}")
+    await ctx.send(f"Reloding {extension}...")
+
+
+for filename in os.listdir("./cogs"):
+    if filename.endswith(".py"):
+        bot.load_extension(f"cogs.{filename[:-3]}")
   
   
 bot.run('TOKEN')
